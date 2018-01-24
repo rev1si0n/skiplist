@@ -17,42 +17,62 @@ void skiplist_dump_all(skiplist_t* sl) {
   }
 }
 
-void main(void) {
+void main(int argc, char* argv[]) {
   skiplist_t s;
-  int32_t r, z, i;
+  skipnode_t* t;
+  uint32_t idx, e, i, k, times;
 
-  while (1) {
-    skiplist_init(&s, 32);
-
-    skiplist_insert(&s, 32, NULL);
-  	skiplist_insert(&s, 33, NULL);
-  	skiplist_insert(&s, 33, NULL);
-  	skiplist_insert(&s, 35, NULL);
-  	skiplist_insert(&s, 36, NULL);
-
-    skipnode_t* x;
-    if ((x = skiplist_find(&s, 35)) != NULL) {
-      printf("skiplist_find(&s, 35) = %d, %p\n", x->key, x);
-    }
-    if ((x = skiplist_find(&s, 36)) != NULL) {
-      printf("skiplist_find(&s, 35) = %d, %p\n", x->key, x);
-    }
-
-  	skiplist_dump_all(&s);
-
-    skiplist_delete(&s, 33);
-    skiplist_delete(&s, 36);
-    printf("after free key 33, 36\n");
-  	skiplist_dump_all(&s);
-
-    i = 1000000;
-  	while (i--) {
-  		r = rand()*rand();
-  		if (!skiplist_find(&s, r)){
-        skiplist_insert(&s, r, NULL);
-      }
-  	}
-    skiplist_destroy(&s);
-    printf("destroy ok");
+  if (argc == 2) {
+    times = atoi(argv[1]);
+  } else {
+    times = 2000000;
   }
+
+  skiplist_init(&s, 32);
+
+  skiplist_insert(&s, 32, NULL);
+  skiplist_insert(&s, 33, NULL);
+  skiplist_insert(&s, 33, NULL);
+  skiplist_insert(&s, 35, NULL);
+  skiplist_insert(&s, 36, NULL);
+
+  if ((t = skiplist_find(&s, 35)) != NULL) {
+    printf("skiplist_find(&s, 35) = %d, %p\n", t->key, t);
+  }
+  if ((t = skiplist_find(&s, 36)) != NULL) {
+    printf("skiplist_find(&s, 35) = %d, %p\n", t->key, t);
+  }
+
+  skiplist_dump_all(&s);
+
+  skiplist_delete(&s, 33);
+  skiplist_delete(&s, 36);
+  printf("after free key 33, 36\n");
+  skiplist_dump_all(&s);
+
+  idx = times, i = 0, e = 0;
+  printf("random %d hash keys\n", times);
+  while (idx--) {
+  	k = rand() * rand();
+  	if (!skiplist_find(&s, k)){
+      skiplist_insert(&s, k, NULL);
+      i ++;
+    } else {
+      e ++;
+    }
+  }
+  printf("%d hash keys inserted, %d keys exist\n", i, e);
+
+  idx = times, i = 0, e = 0;
+  printf("finding %d random hash keys\n", times);
+  while (idx--) {
+    k = rand() * rand();
+  	if (skiplist_find(&s, k)) {
+      e ++;
+    }
+  }
+  printf("%d random hash keys finded\n", e);
+  printf("destroy skiplist\n");
+  skiplist_destroy(&s);
+  printf("done\n");
 }
