@@ -35,10 +35,10 @@
 typedef void object;
 
 typedef struct skipnode {
-  int32_t key; // key
+  int32_t key;
   uint8_t level;
-  uint32_t order; // add for lzw compress
-  object* object; // data obj pointer
+  uint32_t order;
+  object* object; // data pointer
   struct skipnode *socket[];
 } skipnode_t;
 
