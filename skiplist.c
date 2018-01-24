@@ -136,6 +136,8 @@ bool skiplist_insert(skiplist_t* sl, int32_t key, object* ob) {
         (*prev)[i]->socket[i] = n;
       }
       free(prev);
+      return true;
     }
   }
+  return false;
 }
