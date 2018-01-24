@@ -2,18 +2,18 @@
 #include "skiplist.h"
 
 void skiplist_dump_all(skiplist_t* sl) {
-	int32_t idx;
-	skipnode_t* t;
+  int32_t idx;
+  skipnode_t* t;
 
   for (idx = 0x0, t = sl->root; t; t = t->socket[SKIPLIST_BOTTOM]) {
     printf("node %p :: %u/%u :: key=%-12d level=%-3u order %u\n",
       t,
-			sl->size,
-			idx++,
-			t->key,
-			t->level,
-			t->order
-		);
+      sl->size,
+      idx++,
+      t->key,
+      t->level,
+      t->order
+    );
   }
 }
 
