@@ -17,7 +17,7 @@ void skiplist_dump_all(skiplist_t* sl) {
   }
 }
 
-void main(int argc, char* argv[]) {
+int main(int argc, char* argv[]) {
   skiplist_t s;
   skipnode_t* t;
   uint32_t idx, e, i, k, times;
@@ -75,4 +75,5 @@ void main(int argc, char* argv[]) {
   printf("destroy skiplist\n");
   skiplist_destroy(&s);
   printf("done\n");
+  return 0;
 }
