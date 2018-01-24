@@ -45,10 +45,10 @@ uint8_t skiplist_rand_level(uint8_t max) {
 
 skipnode_t* skiplist_create_node(uint8_t level) {
   skipnode_t* n;
-  int32_t msize = sizeof(skipnode_t) + level * sizeof(skipnode_t*);
+  int32_t s = sizeof(skipnode_t) + level * sizeof(skipnode_t*);
 
-  if ((n = (skipnode_t*)malloc(msize)) != NULL) {
-    memset(n, ZERO_NULL, msize);
+  if ((n = (skipnode_t*)malloc(s)) != NULL) {
+    memset(n, ZERO_NULL, s);
     n->level = level;
   }
   return n;
