@@ -25,52 +25,52 @@
 
 // BKDR hash
 uint64_t BKDR_hash(const char *ptr) {
-    uint64_t hash = 0x0;
+  uint64_t hash = 0x0;
 
-    // 0x0521 -> 1313
-    while (*ptr) hash = hash * 0x0521 + (*ptr++);
-    return hash;
+  // 0x0521 -> 1313
+  while (*ptr) hash = hash * 0x0521 + (*ptr++);
+  return hash;
 }
 
 // 随机 level 来自 Redis Zset
 // http://download.redis.io/redis-stable/src/t_zset.c
 uint8_t skiplist_rand_level(uint8_t max) {
-	uint8_t level = 0x01;
+  uint8_t level = 0x01;
 
-	while ((rand() & 0xff) < (0.25 * 0xff))
+  while ((rand() & 0xff) < (0.25 * 0xff))
     level++;
 
   return (level < max)?level: max;
 }
 
 skipnode_t* skiplist_create_node(uint8_t level) {
-	skipnode_t* n;
+  skipnode_t* n;
   int32_t msize = sizeof(skipnode_t) + level * sizeof(skipnode_t*);
 
-	if ((n = (skipnode_t*)malloc(msize)) != NULL) {
+  if ((n = (skipnode_t*)malloc(msize)) != NULL) {
     memset(n, ZERO_NULL, msize);
     n->level = level;
   }
-	return n;
+  return n;
 }
 
 void skiplist_destroy(skiplist_t* sl) {
-	skipnode_t *n, *t;
+  skipnode_t *n, *t;
 
-	for (t = sl->root; t; t = n) {
-		n = t->socket[SKIPLIST_BOTTOM];
-		free(t);
-	}
+  for (t = sl->root; t; t = n) {
+    n = t->socket[SKIPLIST_BOTTOM];
+    free(t);
+  }
 }
 
 void skiplist_init(skiplist_t* sl, uint8_t level) {
-	skipnode_t* n;
+  skipnode_t* n;
 
-	if ((n = skiplist_create_node(level)) != NULL) {
+  if ((n = skiplist_create_node(level)) != NULL) {
     sl->root = n;
     sl->size = 0x0;
-		sl->level = level;
-		n->key = SKIPLIST_KEY_SOL;
+    sl->level = level;
+    n->key = SKIPLIST_KEY_SOL;
   }
 }
 
