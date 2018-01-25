@@ -119,6 +119,7 @@ void skiplist_delete(skiplist_t* sl, int32_t key) {
         (*prev)[i]->socket[i] = (*prev)[i]->socket[i]->socket[i];
       }
     }
+    sl->size --;
     free(prev);
     free(n);
   }
