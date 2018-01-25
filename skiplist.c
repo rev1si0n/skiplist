@@ -66,6 +66,9 @@ void skiplist_destroy(skiplist_t* sl) {
 void skiplist_init(skiplist_t* sl, uint8_t level) {
   skipnode_t* n;
 
+  if (level < SKIPLIST_MIN_LEVEL || level > UINT8_MAX)
+    level = SKIPLIST_LEVEL;
+
   if ((n = skiplist_create_node(level)) != NULL) {
     sl->root = n;
     sl->size = 0x0;

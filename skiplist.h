@@ -30,6 +30,8 @@
 #define ZERO_NULL           (0x0)
 #define SKIPLIST_BOTTOM     (0x0)
 #define SKIPLIST_KEY_SOL    INT32_MIN
+#define SKIPLIST_LEVEL      (0x20)
+#define SKIPLIST_MIN_LEVEL  (0x02)
 
 
 typedef void object;
