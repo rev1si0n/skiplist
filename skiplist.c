@@ -45,7 +45,7 @@ uint8_t skiplist_rand_level(uint8_t max) {
 
 skipnode_t* skiplist_create_node(uint8_t level) {
   skipnode_t* n;
-  int32_t s = sizeof(skipnode_t) + level * sizeof(skipnode_t*);
+  size_t s = sizeof(skipnode_t) + level * sizeof(skipnode_t*);
 
   if ((n = (skipnode_t*)malloc(s)) != NULL) {
     memset(n, ZERO_NULL, s);
@@ -77,7 +77,7 @@ void skiplist_init(skiplist_t* sl, uint8_t level) {
 skipnode_t* (*skiplist_find_previous(skiplist_t* sl, int32_t key))[] {
   uint8_t i;
   skipnode_t *(*prev)[], *n;
-  uint32_t s = sizeof(skipnode_t*) * sl->level;
+  size_t s = sizeof(skipnode_t*) * sl->level;
 
   if ((prev = (skipnode_t* (*)[])malloc(s)) != NULL) {
     memset(prev, ZERO_NULL, s);
