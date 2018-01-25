@@ -2,6 +2,7 @@
 #include <time.h>
 #include "skiplist.h"
 
+
 void skiplist_dump_all(skiplist_t* sl) {
   int32_t idx;
   skipnode_t* t;
@@ -23,6 +24,16 @@ int main(int argc, char* argv[]) {
   skiplist_t s;
   skipnode_t* t;
   uint32_t idx, e, i, k, times, level;
+  char* suffix;
+  if (CLOCKS_PER_SEC == 1000) {
+    /*
+    test.c:5:5: error: missing binary operator before token "1000000"
+    #if CLOCKS_PER_SEC == 1000
+    */
+    suffix = "ms";
+  } else if (CLOCKS_PER_SEC == 1000000) {
+    suffix = "us";
+  }
 
   if (argc == 3) {
     times = atoi(argv[1]);
@@ -65,27 +76,27 @@ int main(int argc, char* argv[]) {
   skiplist_init(&s, level);
   idx = times, i = 0, e = 0, c = clock();
   while (idx--) {
-  	k = rand() * rand();
-  	if (!skiplist_find(&s, k)){
+    k = rand() * rand();
+    if (!skiplist_find(&s, k)){
       skiplist_insert(&s, k, NULL);
       i ++;
     } else {
       e ++;
     }
   }
-  printf("%d random hash keys inserted, %d keys exist, %ldms\n", i, e, clock() - c);
+  printf("%d random hash keys inserted, %d keys exist, %ld%s\n", i, e, clock() - c, suffix);
 
   idx = times, i = 0, e = 0, c = clock();
   while (idx--) {
     k = rand() * rand();
-  	if (skiplist_find(&s, k)) {
+    if (skiplist_find(&s, k)) {
       e ++;
     }
   }
-  printf("find %d random hash keys, %ldms\n", e, clock() - c);
+  printf("find %d random hash keys, %ld%s\n", e, clock() - c, suffix);
 
   c = clock();
   skiplist_destroy(&s);
-  printf("destroy skiplist, %ldms\n", clock() - c);
+  printf("destroy skiplist, %ld%s\n", clock() - c, suffix);
   return 0;
 }
