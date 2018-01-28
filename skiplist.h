@@ -51,9 +51,12 @@ typedef struct skiplist {
 } skiplist_t;
 
 
-void skiplist_init(skiplist_t* sl, uint8_t level);
-void skiplist_destroy(skiplist_t* sl);
-bool skiplist_insert(skiplist_t* sl, int32_t key, object* ob);;
-void skiplist_delete(skiplist_t* sl, int32_t key);
-skipnode_t* skiplist_find(skiplist_t* sl, int32_t key);
 uint64_t BKDR_hash(const char *ptr);
+uint8_t skiplist_rand_level(uint8_t max);
+skipnode_t* skiplist_create_node(uint8_t level);
+void skiplist_destroy(skiplist_t* sl);
+void skiplist_init(skiplist_t* sl, uint8_t level);
+void skiplist_find_prev_nodes(skiplist_t* sl, int32_t key, skipnode_t* prev[]);
+skipnode_t* skiplist_find(skiplist_t* sl, int32_t key);
+void skiplist_delete(skiplist_t* sl, int32_t key);
+bool skiplist_insert(skiplist_t* sl, int32_t key, object* ptr);

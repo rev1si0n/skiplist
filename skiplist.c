@@ -25,7 +25,7 @@
 
 // BKDR hash
 uint64_t BKDR_hash(const char *ptr) {
-  uint64_t hash = 0x0;
+  uint64_t hash = ZERO_NULL;
 
   // 0x0521 -> 1313
   while (*ptr) hash = hash * 0x0521 + (*ptr++);
@@ -44,104 +44,92 @@ uint8_t skiplist_rand_level(uint8_t max) {
 }
 
 skipnode_t* skiplist_create_node(uint8_t level) {
-  skipnode_t* n;
-  size_t s = sizeof(skipnode_t) + level * sizeof(skipnode_t*);
+  skipnode_t *node;
+  size_t size = sizeof(skipnode_t) + level * sizeof(skipnode_t*);
 
-  if ((n = (skipnode_t*)malloc(s)) != NULL) {
-    memset(n, ZERO_NULL, s);
-    n->level = level;
+  if ((node = (skipnode_t*)malloc(size)) != NULL) {
+    memset(node, ZERO_NULL, size);
+    node->level = level;
   }
-  return n;
+  return node;
 }
 
 void skiplist_destroy(skiplist_t* sl) {
-  skipnode_t *n, *t;
+  skipnode_t *node, *t;
 
-  for (t = sl->root; t; t = n) {
-    n = t->socket[SKIPLIST_BOTTOM];
+  for (t = sl->root; t; t = node) {
+    node = t->socket[SKIPLIST_BOTTOM];
     free(t);
   }
 }
 
 void skiplist_init(skiplist_t* sl, uint8_t level) {
-  skipnode_t* n;
+  skipnode_t *node;
 
   if (level < SKIPLIST_MIN_LEVEL || level > UINT8_MAX)
     level = SKIPLIST_LEVEL;
 
-  if ((n = skiplist_create_node(level)) != NULL) {
-    sl->root = n;
-    sl->size = 0x0;
+  if ((node = skiplist_create_node(level)) != NULL) {
+    sl->root  = node;
     sl->level = level;
-    n->key = SKIPLIST_KEY_SOL;
+    sl->size  = ZERO_NULL;
+    node->key = SKIPLIST_KEY_SOL;
   }
 }
 
-skipnode_t* (*skiplist_find_previous(skiplist_t* sl, int32_t key))[] {
-  uint8_t i;
-  skipnode_t *(*prev)[], *n;
-  size_t s = sizeof(skipnode_t*) * sl->level;
+void skiplist_find_prev_nodes(skiplist_t* sl, int32_t key, skipnode_t* prev[]) {
+  skipnode_t *node = sl->root;
 
-  if ((prev = (skipnode_t* (*)[])malloc(s)) != NULL) {
-    memset(prev, ZERO_NULL, s);
-    for (i = sl->level, n = sl->root; i--; (*prev)[i] = n) {
-      while (n->socket[i] && n->socket[i]->key < key) {
-        n = n->socket[i];
-      }
+  memset(prev, ZERO_NULL, sizeof(skipnode_t*) * sl->level);
+  for (uint8_t i = sl->level; i-- ; prev[i] = node) {
+    while (node->socket[i] && node->socket[i]->key < key) {
+      node = node->socket[i];
     }
   }
-  return prev;
 }
 
 skipnode_t* skiplist_find(skiplist_t* sl, int32_t key) {
-  skipnode_t *(*prev)[], *n = NULL;
+  skipnode_t* prev[sl->level], *node = NULL;
 
-  prev = skiplist_find_previous(sl, key);
-  if (prev != NULL) {
-    n = (*prev)[SKIPLIST_BOTTOM]->socket[SKIPLIST_BOTTOM];
-    if (!n || n->key != key) {
-      n = NULL;
-    }
-    free(prev);
+  skiplist_find_prev_nodes(sl, key, prev);
+  node = prev[SKIPLIST_BOTTOM]->socket[SKIPLIST_BOTTOM];
+  if (!node || node->key != key) {
+    node = NULL;
   }
-  return n;
+  return node;
 }
 
 void skiplist_delete(skiplist_t* sl, int32_t key) {
-  skipnode_t *(*prev)[], *n = NULL;
+  skipnode_t* prev[sl->level], *node = NULL;
 
-  prev = skiplist_find_previous(sl, key);
-  if (prev != NULL) {
-    n = (*prev)[SKIPLIST_BOTTOM]->socket[SKIPLIST_BOTTOM];
-    if (n && n->key == key) {
-      uint8_t i = n->level;
-      while (i--) {
-        (*prev)[i]->socket[i] = (*prev)[i]->socket[i]->socket[i];
-      }
+  skiplist_find_prev_nodes(sl, key, prev);
+  node = prev[SKIPLIST_BOTTOM]->socket[SKIPLIST_BOTTOM];
+  if (node && node->key == key) {
+    uint8_t i = node->level;
+    while (i--) {
+      prev[i]->socket[i] = prev[i]->socket[i]->socket[i];
     }
-    sl->size --;
-    free(prev);
-    free(n);
+    sl->size--;
   }
 }
 
-bool skiplist_insert(skiplist_t* sl, int32_t key, object* ob) {
-  skipnode_t *(*prev)[], *n;
+bool skiplist_insert(skiplist_t* sl, int32_t key, object* ptr) {
+  skipnode_t* prev[sl->level], *node = NULL;
+  uint8_t level = skiplist_rand_level(sl->level);
 
-  if ((n = skiplist_create_node(skiplist_rand_level(sl->level))) != NULL) {
-    n->key = key;
-    n->object = ob;
-    n->order = sl->size++;
-
-    if ((prev = skiplist_find_previous(sl, key)) != NULL) {
-      uint8_t i = n->level;
-      while (i--) {
-        n->socket[i] = (*prev)[i]->socket[i];
-        (*prev)[i]->socket[i] = n;
-      }
-      free(prev);
-      return true;
-    }
+  if ((node = skiplist_create_node(level)) == NULL) {
+    return false;
   }
-  return false;
+
+  node->key    = key;
+  node->object = ptr;
+  node->order  = sl->size++;
+
+  skiplist_find_prev_nodes(sl, key, prev);
+
+  while (level--) {
+    node->socket[level] = prev[level]->socket[level];
+    prev[level]->socket[level] = node;
+  }
+  return true;
 }
