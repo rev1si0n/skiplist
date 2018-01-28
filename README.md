@@ -34,4 +34,32 @@ base test finished.
 find 42220 random hash keys, 3835ms
 destroy skiplist, 342ms
 ```
+
+### Example
+```c
+skiplist_t list;
+skipnode_t *node;
+uint32_t test_value = 256;
+
+// initialize
+skiplist_init(&list, 32);
+// add a key & object
+skiplist_insert(&list, 256, (object*)&test_value);
+// find a key
+node = skiplist_find(&list, 256);
+if (node != NULL) {
+  printf("key 256 find, stored value is %d.\n", *((uint32_t*)node->object));
+} else {
+  puts("WTF");
+}
+// delete key
+skiplist_delete(&list, 256);
+
+node = skiplist_find(&list, 256);
+if (node == NULL) {
+  puts("key 256 deleted successfully.");
+} else {
+  puts("this not gonna be happen.");
+}
+```
 Done.
