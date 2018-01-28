@@ -34,10 +34,10 @@ uint64_t BKDR_hash(const char *ptr) {
 
 skipnode_t* skiplist_create_node(uint8_t level) {
   skipnode_t *node;
-  size_t size = sizeof(skipnode_t) + level * sizeof(skipnode_t*);
 
-  if ((node = (skipnode_t*)malloc(size)) != NULL) {
-    memset(node, ZERO_NULL, size);
+  #define _SIZE sizeof(skipnode_t) + level * sizeof(skipnode_t*)
+  if ((node = (skipnode_t*)malloc(_SIZE)) != NULL) {
+    memset(node, ZERO_NULL, _SIZE);
     node->level = level;
   }
   return node;
@@ -55,7 +55,7 @@ void skiplist_destroy(skiplist_t* sl) {
 void skiplist_init(skiplist_t* sl, uint8_t level) {
   skipnode_t *node;
 
-  if (level < SKIPLIST_MIN_LEVEL || level > UINT8_MAX)
+  if (SKIPLIST_MIN_LEVEL > level || UINT8_MAX < level)
     level = SKIPLIST_LEVEL;
 
   if ((node = skiplist_create_node(level)) != NULL) {
@@ -116,8 +116,8 @@ bool skiplist_insert(skiplist_t* sl, int32_t key, object* ptr) {
   }
 
   node->key    = key;
-  node->object = ptr;
   node->order  = sl->size++;
+  node->object = ptr;
 
   skiplist_find_prev_nodes(sl, key, prev);
   while (level--) {
