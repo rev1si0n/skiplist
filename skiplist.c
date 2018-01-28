@@ -61,7 +61,7 @@ void skiplist_init(skiplist_t* sl, uint8_t level) {
   if ((node = skiplist_create_node(level)) != NULL) {
     sl->root  = node;
     sl->level = level;
-    sl->size  = ZERO_NULL;
+    sl->count  = ZERO_NULL;
     node->key = SKIPLIST_KEY_SOL;
   }
 }
@@ -98,7 +98,7 @@ void skiplist_delete(skiplist_t* sl, int32_t key) {
     while (i--) {
       prev[i]->socket[i] = prev[i]->socket[i]->socket[i];
     }
-    sl->size--;
+    sl->count--;
   }
 }
 
@@ -116,7 +116,7 @@ bool skiplist_insert(skiplist_t* sl, int32_t key, object* ptr) {
   }
 
   node->key    = key;
-  node->order  = sl->size++;
+  node->order  = sl->count++;
   node->object = ptr;
 
   skiplist_find_prev_nodes(sl, key, prev);

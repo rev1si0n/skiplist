@@ -10,7 +10,7 @@ void skiplist_dump_all(skiplist_t* sl) {
   for (idx = -1, t = sl->root; t; t = t->socket[SKIPLIST_BOTTOM]) {
     printf("node %p :: %u/%-5d :: key=%-12d level=%-3u insert order %u\n",
       t,
-      sl->size,
+      sl->count,
       idx++,
       t->key,
       t->level,

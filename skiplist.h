@@ -45,7 +45,7 @@ typedef struct skipnode {
 } skipnode_t;
 
 typedef struct skiplist {
-  int32_t size;
+  uint32_t count;
   uint8_t level;
   skipnode_t* root;
 } skiplist_t;
