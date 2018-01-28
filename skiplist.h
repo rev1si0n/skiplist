@@ -52,7 +52,6 @@ typedef struct skiplist {
 
 
 uint64_t BKDR_hash(const char *ptr);
-uint8_t skiplist_rand_level(uint8_t max);
 skipnode_t* skiplist_create_node(uint8_t level);
 void skiplist_destroy(skiplist_t* sl);
 void skiplist_init(skiplist_t* sl, uint8_t level);

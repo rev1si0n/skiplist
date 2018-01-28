@@ -32,17 +32,6 @@ uint64_t BKDR_hash(const char *ptr) {
   return hash;
 }
 
-// 随机 level 来自 Redis Zset
-// http://download.redis.io/redis-stable/src/t_zset.c
-uint8_t skiplist_rand_level(uint8_t max) {
-  uint8_t level = 0x01;
-
-  while ((rand() & 0xff) < (0.25 * 0xff))
-    level++;
-
-  return (level < max)?level: max;
-}
-
 skipnode_t* skiplist_create_node(uint8_t level) {
   skipnode_t *node;
   size_t size = sizeof(skipnode_t) + level * sizeof(skipnode_t*);
@@ -114,8 +103,13 @@ void skiplist_delete(skiplist_t* sl, int32_t key) {
 }
 
 bool skiplist_insert(skiplist_t* sl, int32_t key, object* ptr) {
+  uint8_t level = 0x01;
   skipnode_t* prev[sl->level], *node = NULL;
-  uint8_t level = skiplist_rand_level(sl->level);
+  // random level
+  while ((rand() & 0xff) < (0.25 * 0xff))
+    level++;
+
+  level = (level <= sl->level)?level: sl->level;
 
   if ((node = skiplist_create_node(level)) == NULL) {
     return false;
@@ -126,7 +120,6 @@ bool skiplist_insert(skiplist_t* sl, int32_t key, object* ptr) {
   node->order  = sl->size++;
 
   skiplist_find_prev_nodes(sl, key, prev);
-
   while (level--) {
     node->socket[level] = prev[level]->socket[level];
     prev[level]->socket[level] = node;
