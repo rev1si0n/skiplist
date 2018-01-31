@@ -31,7 +31,7 @@
 #define SKIPLIST_BOTTOM     (0x0)
 #define SKIPLIST_KEY_SOL    INT32_MIN
 #define SKIPLIST_LEVEL      (0x20)
-#define SKIPLIST_MIN_LEVEL  (0x02)
+#define SKIPLIST_MIN_LEVEL  (0x10) // min level 16
 
 
 typedef void object;
